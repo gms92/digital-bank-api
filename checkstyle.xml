@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <property name="fileExtensions" value="java, properties, xml"/>
+
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
+
+  <module name="SuppressionFilter">
+    <property name="file" value="checkstyle-suppressions.xml"/>
+    <property name="optional" value="false"/>
+  </module>
+
+  <!-- Desativado: JavadocPackage (exige package-info.java em todo pacote) -->
+
+  <module name="Translation"/>
+  <module name="FileLength"/>
+  <!-- Formatação delegada ao Spotless: LineLength, FileTabCharacter, NewlineAtEndOfFile, trailing spaces -->
+
+  <module name="TreeWalker">
+
+    <!-- Javadoc: mantidas apenas validações estruturais, removidas as que exigem doc em tudo -->
+    <module name="InvalidJavadocPosition"/>
+    <module name="JavadocStyle"/>
+    <!-- Desativado: JavadocMethod, JavadocVariable, JavadocType, MissingJavadocMethod -->
+
+    <!-- Naming Conventions -->
+    <module name="ConstantName"/>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="MethodName"/>
+    <module name="PackageName"/>
+    <module name="ParameterName"/>
+    <module name="StaticVariableName"/>
+    <module name="TypeName"/>
+
+    <!-- Imports -->
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="false"/>
+    </module>
+
+    <!-- Size Violations -->
+    <module name="MethodLength"/>
+    <module name="ParameterNumber"/>
+
+    <!-- Whitespace delegado ao Spotless -->
+
+    <!-- Modifiers -->
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+
+    <!-- Blocks -->
+    <module name="AvoidNestedBlocks"/>
+    <module name="EmptyBlock"/>
+    <module name="LeftCurly"/>
+    <module name="NeedBraces"/>
+    <module name="RightCurly"/>
+
+    <!-- Coding -->
+    <module name="EmptyStatement"/>
+    <module name="EqualsHashCode"/>
+    <!-- Desativado: HiddenField (construtores com mesmo nome de campo são padrão comum) -->
+    <module name="IllegalInstantiation"/>
+    <module name="InnerAssignment"/>
+    <!-- Desativado: MagicNumber (muito restritivo para código de produção) -->
+    <module name="MissingSwitchDefault"/>
+    <module name="MultipleVariableDeclarations"/>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+
+    <!-- Design -->
+    <!-- Desativado: DesignForExtension (incompatível com beans Spring) -->
+    <!-- Desativado: FinalClass (incompatível com classes Spring como @SpringBootApplication) -->
+    <module name="HideUtilityClassConstructor"/>
+    <module name="InterfaceIsType"/>
+    <module name="VisibilityModifier">
+      <!-- permite campos de teste sem getter/setter -->
+      <property name="packageAllowed" value="true"/>
+    </module>
+
+    <!-- Misc -->
+    <module name="ArrayTypeStyle"/>
+    <!-- Desativado: FinalParameters (muito verboso, não agrega valor prático) -->
+    <module name="TodoComment"/>
+    <module name="UpperEll"/>
+
+  </module>
+
+</module>
