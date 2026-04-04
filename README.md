@@ -14,7 +14,7 @@ API REST para um banco digital simplificado com transferências entre contas, co
 
 ### 1. Configurar variáveis de ambiente
 
-A aplicação possui valores default para as variáveis de ambiente e sobe normalmente sem elas. Porém, para o envio de email funcionar, é necessário configurar as credenciais reais do [Mailtrap](https://mailtrap.io):
+A aplicação possui valores default para as variáveis de ambiente e sobe normalmente sem elas. Porém, para o envio de email funcionar, crie uma conta gratuita no [Mailtrap](https://mailtrap.io), acesse **Email Sandbox > SMTP Credentials** e copie as credenciais:
 
 ```
   MAIL_USERNAME=seu_username
@@ -33,8 +33,16 @@ Isso sobe:
 
 ### 3. Rodar a aplicação
 
+Sem notificação por email:
+
 ```bash
   mvn spring-boot:run
+```
+
+Com notificação por email (credenciais do Mailtrap):
+
+```bash
+  MAIL_USERNAME=seu_username MAIL_PASSWORD=sua_password mvn spring-boot:run
 ```
 
 A API ficará disponível em `http://localhost:8080`.
