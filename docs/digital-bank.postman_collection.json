@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "18f58b4d-e67a-4e82-854f-e635555ae81d",
+		"name": "digital-bank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47452941",
+		"_collection_link": "https://guilherme-silva-5dfce50f-7587840.postman.co/workspace/Guilherme-Maia-e-Silva's-Worksp~4b71b96e-ee85-47f5-800c-bc00310cb462/collection/47452941-18f58b4d-e67a-4e82-854f-e635555ae81d?action=share&source=collection_link&creator=47452941"
+	},
+	"item": [
+		{
+			"name": "Criar uma nova conta",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Alice\", \n    \"initialBalance\": 1000.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/accounts \\\n    -H \"Content-Type: application/json\" \\                                                                                                       \n    -d '{\"name\": \"Alice\", \"initialBalance\": 1000.00}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar uma conta",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/accounts/e10d208c-b695-4dfe-bb3a-ff9dc86f8232",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"e10d208c-b695-4dfe-bb3a-ff9dc86f8232"
+					]
+				},
+				"description": "Generated from cURL: curl http://localhost:8080/accounts/{id}"
+			},
+			"response": []
+		},
+		{
+			"name": "Executa uma transferência de valores entre contas",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transferId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"sourceAccountId\": \"e10d208c-b695-4dfe-bb3a-ff9dc86f8232\",\n    \"targetAccountId\": \"4295d500-ba85-4fe8-998a-f61910af298d\",\n    \"amount\": 200.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transfers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transfers"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/transfers \\\n    -H \"Content-Type: application/json\" \\\n    -d '{\n      \"transferId\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"sourceAccountId\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"targetAccountId\": \"550e8400-e29b-41d4-a716-446655440002\",\n      \"amount\": 200.00\n    }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Consulta extrato de uma conta",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/accounts/e10d208c-b695-4dfe-bb3a-ff9dc86f8232/statements?page=0&size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts",
+						"e10d208c-b695-4dfe-bb3a-ff9dc86f8232",
+						"statements"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"http://localhost:8080/accounts/e10d208c-b695-4dfe-bb3a-ff9dc86f8232/statements?page=0&size=10\""
+			},
+			"response": []
+		}
+	]
+}
