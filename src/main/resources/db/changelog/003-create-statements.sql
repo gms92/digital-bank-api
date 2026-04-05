@@ -9,5 +9,3 @@ CREATE TABLE statements (
     CONSTRAINT fk_statements_account  FOREIGN KEY (account_id)  REFERENCES accounts (id),
     CONSTRAINT fk_statements_transfer FOREIGN KEY (transfer_id) REFERENCES transfers (id)
 );
-
-CREATE INDEX idx_statements_account_id ON statements (account_id);

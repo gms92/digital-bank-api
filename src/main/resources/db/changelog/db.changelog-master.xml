@@ -8,5 +8,6 @@
     <include file="db/changelog/001-create-accounts.sql"/>
     <include file="db/changelog/002-create-transfers.sql"/>
     <include file="db/changelog/003-create-statements.sql"/>
+    <include file="db/changelog/004-create-indexes.sql"/>
 
 </databaseChangeLog>

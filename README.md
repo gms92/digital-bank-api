@@ -125,9 +125,9 @@ Após commit da transferência, um evento `TransferFundsCompletedEvent` é publi
 
 ### Banco de Dados
 
-- **PostgreSQL 16** com schema versionado via **Liquibase**
-- Foreign keys entre as tabelas, com índices implícitos nas colunas referenciadas
-- Índice explícito em `statements.account_id` para consultas de extrato eficientes
+- **PostgreSQL 16** com schema versionado via **Liquibase**. As migrations ficam em `src/main/resources/db/changelog/` e rodam automaticamente na inicialização da aplicação, controladas pela tabela `DATABASECHANGELOG`
+- Foreign keys entre as tabelas (`source_account_id`, `target_account_id`, `account_id`, `transfer_id`)
+- Índices criados nas colunas `source_account_id`, `target_account_id`, `account_id` e `transfer_id`
 - **HikariCP** com pool de conexões configurado
 
 
