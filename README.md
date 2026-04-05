@@ -109,7 +109,15 @@ A transação tem timeout de 5 segundos (`@Transactional(timeout = 5)`) para evi
 
 ### Idempotência
 
-A operação de transferência é idempotente. O cliente gera um `transferId` (UUID) antes de enviar. O servidor verifica se o ID já existe (`existsById`) antes de processar. Se sim, retorna a transferência existente sem reprocessar. Isso garante que retries não causem débitos duplicados.
+A operação de transferência é idempotente. O cliente gera um `transferId` (UUID) antes de enviar. O servidor verifica se o ID já existe antes de processar, cobrindo três cenários:
+
+| Cenário | Status |
+|---|---|
+| `transferId` novo | `201 Created` — transferência processada normalmente |
+| `transferId` repetido com os mesmos dados | `200 OK` — retorna a transferência existente sem reprocessar |
+| `transferId` repetido com dados diferentes | `409 Conflict` — rejeita a requisição para evitar que um bug ou tentativa de fraude use um ID antigo para validar uma operação nova |
+
+Isso garante que retries de rede não causem débitos duplicados, e que IDs reutilizados com dados divergentes sejam explicitamente rejeitados.
 
 ### Notificações
 
