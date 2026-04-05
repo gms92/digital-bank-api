@@ -4,7 +4,6 @@ import com.digitalbank.account.dto.AccountRequest;
 import com.digitalbank.account.dto.AccountResponse;
 import com.digitalbank.account.service.AccountService;
 import com.digitalbank.transfer.dto.StatementResponse;
-import com.digitalbank.transfer.service.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,11 +27,9 @@ import java.util.UUID;
 public class AccountController {
 
     private final AccountService accountService;
-    private final TransferService transferService;
 
-    public AccountController(AccountService accountService, TransferService transferService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
-        this.transferService = transferService;
     }
 
     @PostMapping
@@ -56,7 +53,7 @@ public class AccountController {
         @PathVariable UUID id,
         @PageableDefault(size = 20, sort = "createdAt") Pageable pageable
     ) {
-        return transferService.getStatement(id, pageable)
+        return accountService.getStatement(id, pageable)
             .map(StatementResponse::from);
     }
 }

@@ -6,7 +6,6 @@ import com.digitalbank.transfer.service.TransferService;
 import com.digitalbank.transfer.service.TransferService.TransferResult;
 import com.digitalbank.account.repository.AccountRepository;
 import com.digitalbank.transfer.domain.Statement;
-import com.digitalbank.transfer.domain.StatementType;
 import com.digitalbank.transfer.domain.Transfer;
 import com.digitalbank.transfer.domain.TransferFundsCompletedEvent;
 import com.digitalbank.transfer.repository.StatementRepository;
@@ -18,10 +17,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.math.BigDecimal;
@@ -142,39 +137,5 @@ class TransferServiceTest {
             transferService.transferFunds(transferId, sourceId, targetId, new BigDecimal("200.00"))
         ).isInstanceOf(ConflictException.class)
          .hasMessageContaining(transferId.toString());
-    }
-
-    @Test
-    void shouldReturnStatementsWithPagination() {
-        UUID accountId = UUID.randomUUID();
-        Pageable firstPage = PageRequest.of(0, 2);
-        Pageable secondPage = PageRequest.of(1, 2);
-
-        UUID transferId1 = UUID.randomUUID();
-        UUID transferId2 = UUID.randomUUID();
-        UUID transferId3 = UUID.randomUUID();
-
-        Statement statement1 = new Statement(accountId, transferId1, StatementType.DEBIT, new BigDecimal("10.00"));
-        Statement statement2 = new Statement(accountId, transferId2, StatementType.CREDIT, new BigDecimal("20.00"));
-        Statement statement3 = new Statement(accountId, transferId3, StatementType.DEBIT, new BigDecimal("30.00"));
-
-        when(statementRepository.findByAccountIdOrderByCreatedAtDesc(accountId, firstPage))
-            .thenReturn(new PageImpl<>(List.of(statement1, statement2), firstPage, 3));
-        when(statementRepository.findByAccountIdOrderByCreatedAtDesc(accountId, secondPage))
-            .thenReturn(new PageImpl<>(List.of(statement3), secondPage, 3));
-
-        Page<Statement> page1 = transferService.getStatement(accountId, firstPage);
-        Page<Statement> page2 = transferService.getStatement(accountId, secondPage);
-
-        assertThat(page1.getContent()).containsExactly(statement1, statement2);
-        assertThat(page1.getContent().get(0).getType()).isEqualTo(StatementType.DEBIT);
-        assertThat(page1.getContent().get(1).getType()).isEqualTo(StatementType.CREDIT);
-        assertThat(page1.getTotalElements()).isEqualTo(3);
-        assertThat(page1.getTotalPages()).isEqualTo(2);
-        assertThat(page1.hasNext()).isTrue();
-
-        assertThat(page2.getContent()).containsExactly(statement3);
-        assertThat(page2.getContent().get(0).getType()).isEqualTo(StatementType.DEBIT);
-        assertThat(page2.hasNext()).isFalse();
     }
 }

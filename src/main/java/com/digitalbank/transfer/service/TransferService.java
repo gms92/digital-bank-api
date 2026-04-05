@@ -12,8 +12,6 @@ import com.digitalbank.transfer.repository.StatementRepository;
 import com.digitalbank.transfer.repository.TransferRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,10 +89,6 @@ public class TransferService {
         LOG.info("method=[TransferService.transferFunds] - Transferência concluída: transferId={}", transferId);
 
         return new TransferResult(transfer, true);
-    }
-
-    public Page<Statement> getStatement(UUID accountId, Pageable pageable) {
-        return statementRepository.findByAccountIdOrderByCreatedAtDesc(accountId, pageable);
     }
 
     private TransferResult handleIdempotentTransfer(UUID transferId, UUID sourceId, UUID targetId, BigDecimal amount) {
