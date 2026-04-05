@@ -189,6 +189,8 @@ Isso garante que retries de rede não causem débitos duplicados, e que IDs reut
 
 Após commit da transferência, um evento `TransferFundsCompletedEvent` é publicado no tópico Kafka `transfer-funds-completed`. O `TransferFundsNotificationConsumer` escuta o tópico e envia um email via **Mailtrap**. O evento só é publicado após o commit da transação no banco, ou seja, nunca é disparado se a transferência falhar. A publicação Kafka é **best-effort**: falha no broker não reverte a transferência.
 
+O Mailtrap é usado como sandbox de desenvolvimento para simular o envio de email real, validando a integração com o evento do Kafka. Em produção, o email seria entregue ao endereço cadastrado na conta do destinatário da transferência.
+
 ### Banco de Dados
 
 - **PostgreSQL 16** com schema versionado via **Liquibase**. As migrations ficam em `src/main/resources/db/changelog/` e rodam automaticamente na inicialização da aplicação, controladas pela tabela `DATABASECHANGELOG`
