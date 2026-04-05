@@ -2,6 +2,7 @@ package com.digitalbank.transfer.service;
 
 import com.digitalbank.account.domain.Account;
 import com.digitalbank.account.repository.AccountRepository;
+import com.digitalbank.shared.ConflictException;
 import com.digitalbank.shared.NotFoundException;
 import com.digitalbank.transfer.domain.Statement;
 import com.digitalbank.transfer.domain.StatementType;
@@ -43,11 +44,12 @@ public class TransferService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    public record TransferResult(Transfer transfer, boolean created) {}
+
     @Transactional(timeout = 5)
-    public Transfer transferFunds(UUID transferId, UUID sourceId, UUID targetId, BigDecimal amount) {
+    public TransferResult transferFunds(UUID transferId, UUID sourceId, UUID targetId, BigDecimal amount) {
         if (transferRepository.existsById(transferId)) {
-            LOG.info("method=[TransferService.transferFunds] - Transferência duplicada ignorada: transferId={}", transferId);
-            return transferRepository.findById(transferId).orElseThrow();
+            return handleIdempotentTransfer(transferId, sourceId, targetId, amount);
         }
 
         LOG.info("method=[TransferService.transferFunds] - Iniciando transferência: transferId={}, de={}, para={}, valor={}", transferId, sourceId, targetId, amount);
@@ -88,10 +90,25 @@ public class TransferService {
 
         LOG.info("method=[TransferService.transferFunds] - Transferência concluída: transferId={}", transferId);
 
-        return transfer;
+        return new TransferResult(transfer, true);
     }
 
     public Page<Statement> getStatement(UUID accountId, Pageable pageable) {
         return statementRepository.findByAccountIdOrderByCreatedAtDesc(accountId, pageable);
     }
+
+    private TransferResult handleIdempotentTransfer(UUID transferId, UUID sourceId, UUID targetId, BigDecimal amount) {
+        Transfer existing = transferRepository.findById(transferId).orElseThrow();
+        boolean sameData = existing.getSourceAccountId().equals(sourceId)
+            && existing.getTargetAccountId().equals(targetId)
+            && existing.getAmount().compareTo(amount) == 0;
+        if (!sameData) {
+            throw new ConflictException(
+                "Transferência com id=" + transferId + " já existe com dados diferentes"
+            );
+        }
+        LOG.info("method=[TransferService.transferFunds] - Transferência duplicada ignorada: transferId={}", transferId);
+        return new TransferResult(existing, false);
+    }
+
 }

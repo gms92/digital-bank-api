@@ -73,7 +73,7 @@ class TransferControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    void shouldBeIdempotentForSameTransferId() throws Exception {
+    void shouldBeIdempotentWhenSameTransferIdWithSameData() throws Exception {
         String transferId = UUID.randomUUID().toString();
         String body = String.format("""
             {
@@ -88,10 +88,40 @@ class TransferControllerTest extends IntegrationTestBase {
             .andExpect(status().isCreated());
 
         mockMvc.perform(post("/transfers").contentType(MediaType.APPLICATION_JSON).content(body))
-            .andExpect(status().isCreated());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.transferId").value(transferId));
 
         mockMvc.perform(get("/accounts/" + sourceId))
             .andExpect(jsonPath("$.balance").value(900.00));
+    }
+
+    @Test
+    void shouldReturnConflictWhenSameTransferIdWithDifferentData() throws Exception {
+        String transferId = UUID.randomUUID().toString();
+
+        mockMvc.perform(post("/transfers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("""
+                    {
+                      "transferId": "%s",
+                      "sourceAccountId": "%s",
+                      "targetAccountId": "%s",
+                      "amount": 100.00
+                    }
+                    """, transferId, sourceId, targetId)))
+            .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/transfers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format("""
+                    {
+                      "transferId": "%s",
+                      "sourceAccountId": "%s",
+                      "targetAccountId": "%s",
+                      "amount": 200.00
+                    }
+                    """, transferId, sourceId, targetId)))
+            .andExpect(status().isConflict());
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.digitalbank.transfer;
 
 import com.digitalbank.account.domain.Account;
+import com.digitalbank.shared.ConflictException;
 import com.digitalbank.transfer.service.TransferService;
+import com.digitalbank.transfer.service.TransferService.TransferResult;
 import com.digitalbank.account.repository.AccountRepository;
 import com.digitalbank.transfer.domain.Statement;
 import com.digitalbank.transfer.domain.StatementType;
@@ -115,16 +117,31 @@ class TransferServiceTest {
     }
 
     @Test
-    void shouldIgnoreDuplicateTransferId() {
+    void shouldReturnExistingTransferWhenSameTransferIdWithSameData() {
         UUID transferId = UUID.randomUUID();
+        Transfer existing = new Transfer(transferId, sourceId, targetId, new BigDecimal("100.00"));
         when(transferRepository.existsById(transferId)).thenReturn(true);
-        when(transferRepository.findById(transferId))
-            .thenReturn(Optional.of(new Transfer(transferId, sourceId, targetId, new BigDecimal("100.00"))));
+        when(transferRepository.findById(transferId)).thenReturn(Optional.of(existing));
 
-        transferService.transferFunds(transferId, sourceId, targetId, new BigDecimal("100.00"));
+        TransferResult result = transferService.transferFunds(transferId, sourceId, targetId, new BigDecimal("100.00"));
 
+        assertThat(result.transfer()).isEqualTo(existing);
+        assertThat(result.created()).isFalse();
         verify(accountRepository, never()).findByIdsForUpdate(anyList());
         verify(transferRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowConflictExceptionWhenSameTransferIdWithDifferentData() {
+        UUID transferId = UUID.randomUUID();
+        Transfer existing = new Transfer(transferId, sourceId, targetId, new BigDecimal("100.00"));
+        when(transferRepository.existsById(transferId)).thenReturn(true);
+        when(transferRepository.findById(transferId)).thenReturn(Optional.of(existing));
+
+        assertThatThrownBy(() ->
+            transferService.transferFunds(transferId, sourceId, targetId, new BigDecimal("200.00"))
+        ).isInstanceOf(ConflictException.class)
+         .hasMessageContaining(transferId.toString());
     }
 
     @Test

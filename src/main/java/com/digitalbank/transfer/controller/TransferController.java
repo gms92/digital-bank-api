@@ -3,13 +3,14 @@ package com.digitalbank.transfer.controller;
 import com.digitalbank.transfer.dto.TransferRequest;
 import com.digitalbank.transfer.dto.TransferResponse;
 import com.digitalbank.transfer.service.TransferService;
+import com.digitalbank.transfer.service.TransferService.TransferResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,16 +24,15 @@ public class TransferController {
     }
 
     @PostMapping("/transfers")
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Executa uma transferência de valores entre contas")
-    public TransferResponse transfer(@Valid @RequestBody TransferRequest request) {
-        return TransferResponse.from(
-            transferService.transferFunds(
-                request.transferId(),
-                request.sourceAccountId(),
-                request.targetAccountId(),
-                request.amount()
-            )
+    public ResponseEntity<TransferResponse> transfer(@Valid @RequestBody TransferRequest request) {
+        TransferResult result = transferService.transferFunds(
+            request.transferId(),
+            request.sourceAccountId(),
+            request.targetAccountId(),
+            request.amount()
         );
+        HttpStatus status = result.created() ? HttpStatus.CREATED : HttpStatus.OK;
+        return ResponseEntity.status(status).body(TransferResponse.from(result.transfer()));
     }
 }
