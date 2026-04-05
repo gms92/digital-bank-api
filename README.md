@@ -64,14 +64,14 @@ Como alternativa, a collection do Postman está disponível em `docs/digital-ban
 
 curl -s -X POST http://localhost:8080/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name": "Alice", "email": "alice@example.com", "balance": 1000.00}'
+  -d '{"name": "Alice", "initialBalance": 1000.00}'
 ```
 ```json
 {
   "id": "a1b2c3d4-0000-0000-0000-000000000001",
   "name": "Alice",
-  "email": "alice@example.com",
-  "balance": 1000.00
+  "balance": 1000.00,
+  "createdAt": "2024-01-01T10:00:00"
 }
 ```
 
@@ -80,14 +80,14 @@ curl -s -X POST http://localhost:8080/accounts \
 
 curl -s -X POST http://localhost:8080/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name": "Bob", "email": "bob@example.com", "balance": 500.00}'
+  -d '{"name": "Bob", "initialBalance": 500.00}'
 ```
 ```json
 {
   "id": "a1b2c3d4-0000-0000-0000-000000000002",
   "name": "Bob",
-  "email": "bob@example.com",
-  "balance": 500.00
+  "balance": 500.00,
+  "createdAt": "2024-01-01T10:00:00"
 }
 ```
 
@@ -107,10 +107,11 @@ curl -s -X POST http://localhost:8080/transfers \
 ```
 ```json
 {
-  "id": "00000000-0000-0000-0000-000000000001",
+  "transferId": "00000000-0000-0000-0000-000000000001",
   "sourceAccountId": "<id da conta A>",
   "targetAccountId": "<id da conta B>",
-  "amount": 200.00
+  "amount": 200.00,
+  "createdAt": "2024-01-01T10:00:00"
 }
 ```
 
