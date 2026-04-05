@@ -57,7 +57,72 @@ A descrição detalhada de cada campo dos requests e responses está disponível
 
 Como alternativa, a collection do Postman está disponível em `docs/digital-bank.postman_collection.json`.
 
-### 5. Rodar os testes
+### 5. Exemplo de fluxo completo
+
+**Criar conta A:**
+```bash
+
+curl -s -X POST http://localhost:8080/accounts \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice", "email": "alice@example.com", "balance": 1000.00}'
+```
+```json
+{
+  "id": "a1b2c3d4-0000-0000-0000-000000000001",
+  "name": "Alice",
+  "email": "alice@example.com",
+  "balance": 1000.00
+}
+```
+
+**Criar conta B:**
+```bash
+
+curl -s -X POST http://localhost:8080/accounts \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Bob", "email": "bob@example.com", "balance": 500.00}'
+```
+```json
+{
+  "id": "a1b2c3d4-0000-0000-0000-000000000002",
+  "name": "Bob",
+  "email": "bob@example.com",
+  "balance": 500.00
+}
+```
+
+Use os `id` retornados nos passos acima para a transferência.
+
+**Transferir de A para B:**
+```bash
+
+curl -s -X POST http://localhost:8080/transfers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transferId": "00000000-0000-0000-0000-000000000001",
+    "sourceAccountId": "<id da conta A>",
+    "targetAccountId": "<id da conta B>",
+    "amount": 200.00
+  }'
+```
+```json
+{
+  "id": "00000000-0000-0000-0000-000000000001",
+  "sourceAccountId": "<id da conta A>",
+  "targetAccountId": "<id da conta B>",
+  "amount": 200.00
+}
+```
+
+Se estiver com o Mailtrap configurado, verifique a caixa de entrada, um email de notificação será enviado.
+
+**Consultar extrato da conta A:**
+```bash
+
+curl -s http://localhost:8080/accounts/<id da conta A>/statements
+```
+
+### 6. Rodar os testes
 
 Apenas testes unitários:
 
